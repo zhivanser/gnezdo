@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Глобальные настройки для улучшения UX (особенно под мобильные устройства) */
+@layer base {
+  body {
+    /* Убираем синее выделение при тапах на мобильных устройствах */
+    -webkit-tap-highlight-color: transparent;
+    
+    /* Запрещаем случайное выделение текста при свайпах карточек */
+    user-select: none; 
+    -webkit-user-select: none;
+  }
+
+  /* Разрешаем выделение текста только в инпутах и текстовых полях */
+  input, textarea {
+    user-select: auto;
+    -webkit-user-select: auto;
+  }
+}

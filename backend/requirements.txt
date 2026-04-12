@@ -1,0 +1,23 @@
+# Веб-фреймворк и сервер
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+
+# База данных и ORM
+SQLAlchemy==2.0.29
+psycopg2-binary==2.9.9
+
+# Валидация данных и схемы
+pydantic==2.6.4
+pydantic-settings==2.2.1
+email-validator==2.1.1
+
+# Чтение файла .env
+python-dotenv==1.0.1
+
+# Инструмент для миграций БД
+alembic==1.13.1
+
+# Безопасность и хэширование паролей
+bcrypt==4.1.2
+python-jose[cryptography]==3.3.0
+python-multipart
