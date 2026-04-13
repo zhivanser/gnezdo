@@ -41,7 +41,7 @@ export default function AboutPage() {
         </h1>
         
         <p className="text-gnezdo-brown/80 font-medium mb-8 leading-relaxed">
-          Сервис поиска идеального соседа в формате Тиндера. 
+          Сервис поиска идеального соседа. 
           Заполняй анкету, свайпай кандидатов и находи тех, с кем комфортно жить.
         </p>
 

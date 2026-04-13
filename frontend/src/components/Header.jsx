@@ -18,7 +18,7 @@ export default function Header() {
       <div className="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
         
         <Link to="/" className="font-bold text-gnezdo-orange text-2xl tracking-tight">
-          Гнездо.
+          Гнездо
         </Link>
         
         <nav className="flex gap-4 text-sm font-semibold items-center">
