@@ -99,7 +99,6 @@ export default function AuthPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              minLength="6"
               className="bg-white/50 border border-gnezdo-orange/30 text-gnezdo-brown rounded-xl px-4 py-3 focus:outline-none focus:border-gnezdo-orange focus:ring-1 focus:ring-gnezdo-orange/50 transition-all font-medium"
             />
           </div>

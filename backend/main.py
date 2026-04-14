@@ -24,11 +24,11 @@ def create_tables_and_test_user():
     
     db = SessionLocal()
     try:
-        test_user = db.query(models.User).filter(models.User.email == "test@gnezdo.ru").first()
+        test_user = db.query(models.User).filter(models.User.email == "1").first()
         if not test_user:
-            hashed_password = auth_utils.get_password_hash("test")
+            hashed_password = auth_utils.get_password_hash("1")
             test_user = models.User(
-                email="test@gnezdo.ru",
+                email="1",
                 password=hashed_password,
                 is_active=True,
                 is_premium=True
@@ -60,7 +60,7 @@ def create_tables_and_test_user():
             )
             db.add(test_profile)
             db.commit()
-            print("Тестовый аккаунт создан: test@gnezdo.ru / test")
+            print("Тестовый аккаунт создан: 1 / 1")
     finally:
         db.close()
 
