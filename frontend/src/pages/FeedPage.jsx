@@ -1,10 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Heart, X, Sparkles } from 'lucide-react';
+import { Heart, X, Sparkles, MapPin, GraduationCap, Calendar, Home, DollarSign, Info } from 'lucide-react';
 import api from '../api';
 
-const TinderCard = ({ profile, onSwipe }) => {
+const ProfileModal = ({ profile, onClose, onSwipe }) => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-[2rem] p-6 max-w-sm w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-extrabold text-gnezdo-brown">{profile.first_name}, {profile.age}</h2>
+        <button onClick={onClose} className="p-2 hover:bg-gnezdo-bg rounded-full">
+          <X size={24} className="text-gnezdo-brown" />
+        </button>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-gnezdo-brown/70">
+          <MapPin size={16} />
+          <span>{profile.city} • {profile.district || 'Район не указан'}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-gnezdo-brown/70">
+          <GraduationCap size={16} />
+          <span>{profile.university || 'Университет не указан'}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-gnezdo-brown/70">
+          <Home size={16} />
+          <span>{profile.housing_role}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-gnezdo-brown/70">
+          <DollarSign size={16} />
+          <span>{profile.budget || 'Бюджет не указан'}</span>
+        </div>
+        
+        <div className="border-t border-gnezdo-orange/20 pt-4">
+          <h3 className="font-bold text-gnezdo-brown mb-2">О себе</h3>
+          <p className="text-sm text-gnezdo-brown/70">{profile.about_me || 'Нет описания'}</p>
+        </div>
+        
+        {profile.hobbies && (
+          <div>
+            <h3 className="font-bold text-gnezdo-brown mb-2">Интересы</h3>
+            <div className="flex flex-wrap gap-2">
+              {profile.hobbies.split(',').map((hobby, idx) => (
+                <span key={idx} className="bg-gnezdo-orange/10 px-3 py-1 rounded-full text-xs text-gnezdo-brown">
+                  {hobby.trim()}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {profile.ideal_format && (
+          <div className="border-t border-gnezdo-orange/20 pt-4">
+            <h3 className="font-bold text-gnezdo-brown mb-2">Идеальный сосед</h3>
+            <p className="text-sm text-gnezdo-brown/70">{profile.ideal_format}</p>
+          </div>
+        )}
+      </div>
+      
+      <div className="flex gap-3 mt-6">
+        <button 
+          onClick={() => onSwipe(profile.id, false)}
+          className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+        >
+          <X size={20} />
+          Пропустить
+        </button>
+        <button 
+          onClick={() => onSwipe(profile.id, true)}
+          className="flex-1 bg-gnezdo-orange hover:bg-gnezdo-orange/90 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+        >
+          <Heart size={20} />
+          Лайк
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const TinderCard = ({ profile, onSwipe, onClick }) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
@@ -24,6 +101,7 @@ const TinderCard = ({ profile, onSwipe }) => {
       drag="x"
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragEnd={handleDragEnd}
+      onClick={onClick}
       className="absolute w-full max-w-sm h-[32rem] rounded-[2rem] p-4 cursor-grab active:cursor-grabbing 
                  border border-white/40 shadow-glass bg-gradient-to-br from-gnezdo-orange/20 to-gnezdo-yellow/20 
                  backdrop-blur-md flex flex-col justify-between overflow-hidden"
@@ -37,6 +115,10 @@ const TinderCard = ({ profile, onSwipe }) => {
         </span>
         <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-gnezdo-brown px-3 py-1 rounded-full text-sm font-extrabold shadow-md border border-gnezdo-orange/30">
           85% Match
+        </div>
+        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-gnezdo-brown px-2 py-1 rounded-full text-xs font-semibold shadow-md border border-gnezdo-orange/30 flex items-center gap-1">
+          <Info size={12} />
+          Нажми для info
         </div>
       </div>
 
@@ -95,6 +177,7 @@ export default function FeedPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [matchData, setMatchData] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,6 +203,7 @@ export default function FeedPage() {
 
   const handleSwipe = async (targetId, isLike) => {
     setProfiles((prev) => prev.filter(p => p.id !== targetId));
+    setSelectedProfile(null);
 
     try {
       const response = await api.post('/swipes', { target_id: targetId, is_like: isLike });
@@ -170,7 +254,8 @@ export default function FeedPage() {
             <TinderCard 
               key={profile.id || index} 
               profile={profile} 
-              onSwipe={handleSwipe} 
+              onSwipe={handleSwipe}
+              onClick={() => setSelectedProfile(profile)}
               style={{ zIndex: profiles.length - index }} 
             />
           ))}
@@ -185,6 +270,14 @@ export default function FeedPage() {
             Мы оповестим вас, когда появятся новые кандидаты.
           </p>
         </div>
+      )}
+
+      {selectedProfile && (
+        <ProfileModal 
+          profile={selectedProfile} 
+          onClose={() => setSelectedProfile(null)}
+          onSwipe={handleSwipe}
+        />
       )}
 
       {matchData && (
